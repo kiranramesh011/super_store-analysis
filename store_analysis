@@ -1,0 +1,114 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+df=pd.read_excel(r"C:\Users\Kiran R\Downloads\SampleSuperstore-191212-222546.xls")
+
+df
+
+df.info()
+
+df.isnull().sum()
+
+df.fillna(0,inplace=True)
+
+df.isnull().sum()
+
+print(df['Category'].unique())
+
+print(df['Sub-Category'].unique())
+
+print(df.duplicated().sum())
+
+df.columns
+
+# Total sales by category
+sales_by_category=df.groupby('Category')['Sales'].sum().reset_index()
+sales_by_category
+
+#Total Profit by Sub-Category
+Profit_by_Sub_Category=df.groupby('Sub-Category')['Profit'].sum().reset_index()
+Profit_by_Sub_Category
+
+#3.	Top 5 Customers by Sales
+top_customers=df.groupby('Customer Name')['Sales'].sum().nlargest(5).reset_index()
+top_customers
+
+#Data Visualization
+#1.	Sales by Category (Bar Plot)
+plt.figure()
+sns.barplot(x='Category',y='Sales',data=sales_by_category)
+plt.title('sales by category')
+plt.xlabel('Category')
+plt.ylabel('Sales')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+sns.barplot(x='Profit', y='Sub-Category', data=Profit_by_Sub_Category, palette='magma')
+plt.title('Total Profit by Sub-Category')
+plt.xlabel('Total Profit')
+plt.ylabel('Sub-Category')
+plt.show()
+
+
+# sales vs profit
+plt.figure()
+sns.scatterplot(x='Sales',y='Profit',data=df,hue='Category')
+plt.xlabel('Sales')
+plt.ylabel('profit')
+plt.show()
+
+#4.	Distribution of Sales (Histogram)
+
+plt.figure()
+sns.histplot(df['Sales'],bins=40,kde=True)
+plt.xlabel('Sales')
+plt.ylabel('Frequency')
+plt.show()
+
+#5.	Correlation Heatmap
+
+
+plt.figure(figsize=(8, 6))
+corr = df[['Sales', 'Quantity', 'Discount', 'Profit']].corr()
+sns.heatmap(corr, annot=True, cmap='coolwarm')
+plt.title('Correlation Heatmap')
+plt.show()
+
+df.columns
+
+#1.	Time Series Analysis (Monthly Sales)
+
+df['Order Date']
+
+import datetime 
+
+df['Order Date']=pd.to_datetime(df['Order Date'])
+
+df['Year_month']=df['Order Date'].dt.to_period('M')
+df
+
+#plt.figure()
+#sns.lineplot(x='Year_month',y='Sales',data=monthly_sales)
+#plt.xlabel('monthly')
+#plt.ylabel('sales')
+#plt.show()
+
+
+sns.lineplot(x='Year_month', y='Sales', data=monthly_sales_df, marker='o')
+plt.title('Monthly Sales Over Time')
+plt.xlabel('Year-Month')
+plt.ylabel('Total Sales')
+plt.xticks(rotation=45)
+plt.show()
+
+monthly_saes=df.groupby('Year_month')['Sales'].sum()
+monthly_saes
+
+monthly_sales_df = df.groupby('Year_month')['Sales'].sum().reset_index()
+monthly_sales
+
+monthly_sales_df['Year_month'] = pd.to_datetime(monthly_sales_df['Year_month'])
+print(monthly_sales_df)
+
